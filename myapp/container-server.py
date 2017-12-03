@@ -70,7 +70,7 @@ def containers_show(id):
 
     """
 
-    output = docker("inspect"', str(id))
+    output = docker("inspect", str(id))
     resp = output
     return Response(response=resp, mimetype="application/json")
 
@@ -113,8 +113,8 @@ def containers_remove_all():
     output = docker_ps_to_array(docker('ps', '-a'))
 
     for every in output:
-        if every['image'] != "container-server"
-            docker('stop', every['id']
+        if every['image'] != "container-server":
+            docker('stop', every['id'])
             docker('rm', every['id'])
     resp = '{"use": "%s"}' % 'Delete the containers'
     return Response(response=resp, mimetype="application/json")
@@ -125,11 +125,11 @@ def images_remove_all():
     Force remove all images - dangrous!
 
     """
-    output = docker_images_to_array('images'))
+    output = docker_images_to_array('images')
 
     for every in output:
-        if every['name'] != "container-server"
-            docker('rmi', every['name']
+        if every['name'] != "container-server":
+            docker('rmi', every['name'])
 
     resp = '{"use": "%s"}' % 'Delete the images'
     return Response(response=resp, mimetype="application/json")
@@ -208,7 +208,9 @@ def docker(*args):
     stdout, stderr = process.communicate()
     if stderr.startswith(b'Error'):
         print('Error: {0} -> {1}'.format(' '.join(cmd), stderr))
-    return stderr.decode('utf-8') + stdout.decode('utf-8')
+    error = stderr.decode('utf-8')
+    out = stdout.decode('utf-8')
+    return error + out
 
 # 
 # Docker output parsing helpers
@@ -221,10 +223,10 @@ def docker_ps_to_array(output):
     all = []
     for c in [line.split() for line in output.splitlines()[1:]]:
         each = {}
-        each['id'] = c[0].decode('utf-8')
-        each['image'] = c[1].decode('utf-8')
-        each['name'] = c[-1].decode('utf-8')
-        each['ports'] = c[-2].decode('utf-8')
+        each['id'] = c[0]
+        each['image'] = c[1]
+        each['name'] = c[-1]
+        each['ports'] = c[-2]
         all.append(each)
     return all
 
