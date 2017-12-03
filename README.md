@@ -1,5 +1,6 @@
-<h1>Docker Container Manager System (CMS)</h1>
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/CrkTJSLd5gQ.jpg)](https://youtu.be/CrkTJSLd5gQ)
+<h1>Docker Container Manager System (CMS)</h1
+
+[![Click on the Picture for a Link to the Video](https://img.youtube.com/vi/CrkTJSLd5gQ/0.jpg)](https://www.youtube.com/watch?v=CrkTJSLd5gQ)
 
 Above is a video detailing this 2nd assignment for the Cloud Computing module.
 
