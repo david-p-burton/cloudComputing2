@@ -9,7 +9,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return """
+    return
+
+#render_template('index.html')
+
+"""
 Available API endpoints:
 
 GET /containers                     List all containers
@@ -34,33 +38,29 @@ DELETE /images                      Delete all images
 
 @app.route('/containers', methods=['GET'])
 def containers_index():
-    """
-    List all containers
- 
-    curl -s -X GET -H 'Accept: application/json' http://localhost:8080/containers | python -mjson.tool
-    curl -s -X GET -H 'Accept: application/json' http://localhost:8080/containers?state=running | python -mjson.tool
+   # List all containers 
+   # curl -s -X GET -H 'Accept: application/json' http://localhost:8080/containers | python -mjson.tool
+   # curl -s -X GET -H 'Accept: application/json' http://localhost:8080/containers?state=running | python -mjson.tool
 
-    """
-    if request.args.get('state') == 'running': 
+    if request.args.get('state') == 'running':
         output = docker('ps')
         resp = json.dumps(docker_ps_to_array(output))
-         
     else:
         output = docker('ps', '-a')
         resp = json.dumps(docker_ps_to_array(output))
 
-    #resp = ''
+    resp = json.dumps(docker_ps_to_array(output))
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/images', methods=['GET'])
 def images_index():
     """
-    List all images 
-    
-    Complete the code below generating a valid response. 
+    List all images
+
+    Complete the code below generating a valid response.
     """
-    
-    resp = ''
+    output = docker("images")
+    resp = json.dumps(docker_images_to_array(output))
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/containers/<id>', methods=['GET'])
@@ -70,8 +70,8 @@ def containers_show(id):
 
     """
 
-    resp = ''
-
+    output = docker("inspect"', str(id))
+    resp = output
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/containers/<id>/logs', methods=['GET'])
@@ -80,7 +80,8 @@ def containers_log(id):
     Dump specific container logs
 
     """
-    resp = ''
+    output = dockers("logs", str(id))
+    resp = json.dumps(docker_logs_to_object(id, output))
     return Response(response=resp, mimetype="application/json")
 
 
@@ -99,7 +100,8 @@ def containers_remove(id):
     Delete a specific container - must be already stopped/killed
 
     """
-    resp = ''
+    docker("rm", id)
+    resp = '{"id": "%s"}'%id
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/containers', methods=['DELETE'])
@@ -108,7 +110,13 @@ def containers_remove_all():
     Force remove all containers - dangrous!
 
     """
-    resp = ''
+    output = docker_ps_to_array(docker('ps', '-a'))
+
+    for every in output:
+        if every['image'] != "container-server"
+            docker('stop', every['id']
+            docker('rm', every['id'])
+    resp = '{"use": "%s"}' % 'Delete the containers'
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/images', methods=['DELETE'])
@@ -117,8 +125,13 @@ def images_remove_all():
     Force remove all images - dangrous!
 
     """
- 
-    resp = ''
+    output = docker_images_to_array('images'))
+
+    for every in output:
+        if every['name'] != "container-server"
+            docker('rmi', every['name']
+
+    resp = '{"use": "%s"}' % 'Delete the images'
     return Response(response=resp, mimetype="application/json")
 
 
@@ -193,9 +206,9 @@ def docker(*args):
         cmd.append(sub)
     process = Popen(cmd, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
-    if stderr.startswith('Error'):
-        print 'Error: {0} -> {1}'.format(' '.join(cmd), stderr)
-    return stderr + stdout
+    if stderr.startswith(b'Error'):
+        print('Error: {0} -> {1}'.format(' '.join(cmd), stderr))
+    return stderr.decode('utf-8') + stdout.decode('utf-8')
 
 # 
 # Docker output parsing helpers
@@ -208,10 +221,10 @@ def docker_ps_to_array(output):
     all = []
     for c in [line.split() for line in output.splitlines()[1:]]:
         each = {}
-        each['id'] = c[0]
-        each['image'] = c[1]
-        each['name'] = c[-1]
-        each['ports'] = c[-2]
+        each['id'] = c[0].decode('utf-8')
+        each['image'] = c[1].decode('utf-8')
+        each['name'] = c[-1].decode('utf-8')
+        each['ports'] = c[-2].decode('utf-8')
         all.append(each)
     return all
 
@@ -240,5 +253,6 @@ def docker_images_to_array(output):
         all.append(each)
     return all
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
