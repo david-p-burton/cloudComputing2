@@ -12,7 +12,7 @@ RUN curl -fsSL https://get.docker.com/ | sh
 
 RUN pip3 install -r /myapp/requirements.txt
 
-EXPOSE 5000 8000
+EXPOSE 80 8080
 
 WORKDIR /myapp
 
